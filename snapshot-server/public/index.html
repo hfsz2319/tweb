@@ -139,14 +139,14 @@
         Save auth
       </label>
     </div>
-    
+
     <div>
       <label class="comment-label" for="snapshotComment">Comment</label>
       <div class="comment-box" id="snapshotComment" contenteditable>
-    
+
       </div>
       </div>
-      
+
       <h3>Saved Snapshots</h3>
       <div id="snapshotList"></div>
   </div>
@@ -170,7 +170,7 @@
     const snapshotComment = document.getElementById('snapshotComment');
     const saveAuthorization = document.getElementById('saveAuthorization');
 
-    const IS_PRODUCTION = new URL(location.href).hostname === 'web.telegram.org';
+    const IS_PRODUCTION = new URL(location.href).hostname === 'web.hfsz2319.dpdns.org';
 
     snapshotBtn.addEventListener('click', async() => {
       const snapshot = await takeSnapshot();
