@@ -4,6 +4,8 @@
  * https://github.com/morethanwords/tweb/blob/master/LICENSE
  */
 
+@use "../../shared" as *;
+
 .popup-date-picker {
   $parent: ".popup";
   user-select: none;
@@ -243,7 +245,9 @@
   &-secondary {
     margin-top: .5rem !important;
   }
+}
 
+.popup-schedule {
   &-repeat {
     margin-bottom: .5rem;
 

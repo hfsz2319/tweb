@@ -1,60 +1,370 @@
-/*
- * https://github.com/morethanwords/tweb
- * Copyright (C) 2019-2021 Eduard Kuzmenko
- * https://github.com/morethanwords/tweb/blob/master/LICENSE
- */
-
+@use "sass:string";
 @use "shared" as *;
 
-@use "base";
-@use "components/prism";
-@use "fonts";
-@use "partials/input";
-@use "partials/button";
-@use "partials/animatedIcon";
-@use "partials/autocompleteHelper";
-@use "partials/autocompletePeerHelper";
-@use "partials/badge";
-@use "partials/ckin";
-@use "partials/checkbox";
-@use "partials/chatlist";
-@use "partials/chat";
-@use "partials/chatTopbar";
-@use "partials/chatBubble";
-@use "partials/chatPinned";
-@use "partials/chatMarkupTooltip";
-@use "partials/chatStickersHelper";
-@use "partials/chatEmojiHelper";
-@use "partials/chatInlineHelper";
-@use "partials/chatSearch";
-@use "partials/chatDrop";
-@use "partials/chatBotCommands";
-@use "partials/crop";
-@use "partials/sidebar";
-@use "partials/profile";
-@use "partials/slider";
-@use "partials/leftSidebar";
-@use "partials/rightSidebar";
-@use "partials/mediaViewer";
-@use "partials/scrollable";
-@use "partials/emojiDropdown";
-@use "partials/selector";
-@use "partials/gifsMasonry";
-@use "partials/preloader";
-@use "partials/ripple";
-@use "partials/avatar";
-@use "partials/document";
-@use "partials/audio";
-@use "partials/quizHint";
-@use "partials/peerTyping";
-@use "partials/poll";
-@use "partials/transition";
-@use "partials/row";
-@use "partials/colorPicker";
-@use "partials/replyKeyboard";
-// @import "partials/peopleNearby";
+@font-face {
+  font-family: 'Numbers Rounded';
+  src: url('#{$fonts-path}/Numbers-Rounded.woff2') format('woff2');
+  unicode-range: U+0030-0039, U+002B, U+002D;
+}
 
-@import "partials/passcodeLockScreen";
+:root {
+  --vh: 1vh;
+  --z-below: -1;
+  --hover-alpha: #{$hover-alpha};
+  --reflect: 1;
+
+  --transition-standard-easing: cubic-bezier(.4, .0, .2, 1);
+  --transition-standard-in-time: .3s;
+  --transition-standard-out-time: .25s;
+  --transition-standard-in: var(--transition-standard-in-time) var(--transition-standard-easing);
+  --transition-standard-out: var(--transition-standard-out-time) var(--transition-standard-easing);
+  --transform-origin-inline-start: left;
+  --transform-origin-inline-end: right;
+  --transform-origin-left-center: left center;
+  --transform-origin-right-center: right center;
+
+  &.is-rtl {
+    --reflect: -1;
+    --transform-origin-inline-start: right;
+    --transform-origin-inline-end: left;
+    --transform-origin-left-center: right center;
+    --transform-origin-right-center: left center;
+  }
+
+  --pm-transition: .2s ease-in-out;
+  --layer-transition: .2s cubic-bezier(.4, .0, .2, 1);
+  --slide-header-transition: .4s ease-in-out;
+  --tabs-transition: .2s ease-in-out;
+  --btn-menu-transition: .2s cubic-bezier(.4, 0, .2, 1);
+  --esg-transition: var(--btn-menu-transition);
+  --input-transition: .2s ease-out;
+  --input-placeholder-transition: .15s ease-out;
+  --reaction-paid-transition: .2s ease-in-out;
+  --sticker-viewer-open-transition-in: .2s var(--transition-standard-easing);
+  --sticker-viewer-open-transition-out: .2s var(--transition-standard-easing);
+  // --sticker-viewer-switch-transition: .2s cubic-bezier(.07,1.21,.56,1.2);
+  --sticker-viewer-switch-transition: .2s cubic-bezier(.12,1.1,.56,1.2);
+  --popup-transition-function: cubic-bezier(.4, 0, .2, 1);
+  // --popup-transition-time: .15s;
+  --popup-transition-time: .15s;
+  --popup-transition: var(--popup-transition-time) var(--popup-transition-function);
+  //--layer-transition: .3s cubic-bezier(.33, 1, .68, 1);
+  //--layer-transition: none;
+  --btn-corner-transition: .2s cubic-bezier(.34, 1.56, .64, 1);
+  --chatlist-badge-transition-in: .25s cubic-bezier(.35,.35,.47,1.34); // 1.34
+  --chatlist-badge-transition-out: .25s cubic-bezier(.35,.35,.7,1);
+  --message-handhelds-margin: 5.5625rem;
+  --message-beside-button-size: 2.375rem;
+  --message-beside-button-margin: calc((var(--message-beside-button-size) + .5rem) * -1);
+  --message-time-background: rgba(0, 0, 0, .35);
+  --messages-container-width: #{$messages-container-width};
+  --messages-text-size: 16px;
+  --messages-line-height: 1.3125;
+  // --messages-line-height: calc(var(--messages-text-size) + 5px);
+  --messages-secondary-text-size: calc(var(--messages-text-size) - 2px);
+  --messages-secondary-line-height: calc(var(--messages-secondary-text-size) + 4px);
+  --messages-time-text-size: calc(var(--messages-text-size) - 4px);
+  // --messages-service-text-size: calc(var(--messages-text-size) - 2px);
+  --messages-service-text-size: calc(var(--messages-text-size) - 1px);
+  --messages-custom-emoji-size: calc(var(--messages-text-size) + 4px);
+  --bubble-transition-in: transform var(--transition-standard-in), opacity var(--transition-standard-in);
+  --bubble-transition-out: transform var(--transition-standard-out), opacity var(--transition-standard-out);
+  --line-height-24: 30px;
+  --line-height-20: 26px;
+  --line-height-18: 24px;
+  --line-height-16: 21px;
+  --line-height-15: 20px;
+  --line-height-14: 18px;
+  --line-height-13: 17px;
+  --line-height-12: 16px;
+  --line-height-11: 15px;
+  --line-height: 1.3125;
+  --font-size-24: 24px;
+  --font-size-20: 20px;
+  --font-size-18: 18px;
+  --font-size-16: 16px;
+  --font-size-15: 15px;
+  --font-size-14: 14px;
+  --font-size-13: 13px;
+  --font-size-12: 12px;
+  --font-size-11: 11px;
+  --font-size: var(--font-size-16);
+  --esg-sticker-size: 72px;
+  --esg-custom-emoji-size: 36px;
+  --popup-sticker-size: 80px;
+  --disabled-opacity: .3;
+  --round-video-size: 280px;
+  --menu-box-shadow: 0px 0px 10px var(--menu-box-shadow-color);
+  --menu-backdrop-filter: blur(50px);
+  --font-regular: "Roboto", -apple-system, apple color emoji, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-monospace: 'Roboto Mono', monospace;
+  --font-rounded: -ui-rounded, "Numbers Rounded", "Roboto", "Helvetica Neue", sans-serif;
+  --font-weight-bold: 500;
+  --font-weight-normal: 400;
+  --selection-background-color: rgba(var(--primary-color-rgb), .4);
+  --selection-color: inherit;
+  --white: #ffffff;
+
+  --ripple-duration: .7s;
+  --ripple-start-scale: 0;
+  --ripple-end-scale: 2;
+
+  @include respond-to(until-floating-left-sidebar) {
+    --ripple-duration: .4s;
+    --ripple-start-scale: .27;
+  }
+
+  --topbar-floating-scaleX: 1;
+  --topbar-call-group-call-height: 3rem;
+  --topbar-call-call-height: 3rem;
+  --topbar-call-rtmp-height: 1.6875rem;
+  --topbar-audio-height: 3.25rem;
+  --topbar-floating-call-height: 0px;
+  --topbar-floating-audio-height: 0px;
+
+  --call-button-size: 3.375rem;
+  --call-button-margin: 2rem;
+
+  --custom-emoji-size: 1.25rem;
+
+  --chat-input-border-radius: 1rem;
+  --chat-input-max-width: var(--messages-container-width);
+  --chat-input-btn-send-margin: #{$btn-send-margin};
+
+  // https://github.com/overtake/TelegramSwift/blob/5cc7d2475fe4738a6aa0486c23eaf80a89d33b97/submodules/TGUIKit/TGUIKit/PresentationTheme.swift#L2054
+  @include avatar-color("red", #FF845E, #D45246);
+  @include avatar-color("orange", #FEBB5B, #F68136);
+  @include avatar-color("violet", #B694F9, #6C61DF);
+  @include avatar-color("green", #9AD164, #46BA43);
+  @include avatar-color("cyan", #53edd6, #28c9b7);
+  @include avatar-color("blue", #5CAFFA, #408ACF);
+  @include avatar-color("pink", #FF8AAC, #D95574);
+  // @include avatar-color("saved", #69BFFA, #3D9DE0);
+  @include avatar-color("archive", #B8C2CC, #9EAAB5);
+
+  --peer-avatar-saved-top: var(--light-filled-saved-color);
+  --peer-avatar-saved-bottom: var(--saved-color);
+
+  --peer-color: var(--primary-color);
+  --peer-color-rgb: var(--primary-color-rgb);
+
+  --avatar-color-story-unread-from: #34c76f;
+  --avatar-color-story-unread-to: #3da1fd;
+  --avatar-color-story-close-from: #88D93A;
+  --avatar-color-story-close-to: #30B73B;
+  --avatar-color-story-read: var(--secondary-color);
+
+  --avatar-color-top: var(--peer-avatar-saved-top);
+  --avatar-color-bottom: var(--peer-avatar-saved-bottom);
+  --avatar-border-radius-forum: 37%;
+
+  --premium-gradient: linear-gradient(52.62deg, #6B93FF 12.22%, #976FFF 50.25%, #E46ACE 98.83%);
+  --star-background-color: var(--surface-color);
+
+  @include respond-to(handhelds) {
+    --right-column-width: 100vw;
+    --esg-sticker-size: 68px;
+    --popup-sticker-size: 68px;
+    --round-video-size: 240px;
+
+    --chat-input-size: #{$chat-input-handhelds-size};
+    --chat-input-padding: #{$chat-padding-handhelds};
+    --chat-input-inner-padding: #{$chat-input-inner-padding-handhelds};
+  }
+
+  @include respond-to(not-handhelds) {
+    --right-column-width: calc(#{$large-screen} / 4);
+
+    --chat-input-size: #{$chat-input-size};
+    --chat-input-padding: #{$chat-padding};
+    --chat-input-inner-padding: #{$chat-input-inner-padding};
+  }
+
+  @include respond-to(esg-bottom) {
+    --chat-input-size: #{$chat-input-handhelds-size};
+    --chat-input-inner-padding: #{$chat-input-inner-padding-handhelds};
+  }
+
+  @include respond-to(only-medium-screens) {
+    --right-column-width: 25vw;
+  }
+
+  --passcode-lock-screen-z-index: 100000;
+
+  --star-golden-color: #fecf16;
+}
+
+@mixin splitColor($property, $color, $light: true, $dark: true, $light-filled: false, $dark-filled: false, $rgb: false, $alpha: $hover-alpha) {
+  --#{$property}: #{$color};
+
+  $lightened: hover-color($color);
+  @if $light != false {
+    --light-#{$property}: #{$lightened};
+  }
+
+  @if $light-filled != false {
+    --light-filled-#{$property}: #{rgba-to-rgb($lightened, $light-filled)};
+  }
+
+  $darkened: darken($color, $alpha * 100);
+  @if $dark != false {
+    --dark-#{$property}: #{$darkened};
+  }
+
+  @if $dark-filled != false {
+    --dark-filled-#{$property}: #{rgba-to-rgb($darkened, $dark-filled)};
+  }
+
+  @if $rgb != false {
+    --#{$property}-rgb: #{red($color)}, #{green($color)}, #{blue($color)};
+  }
+}
+
+:root {
+  // * Day theme
+  --body-background-color: #fff;
+  --body-background-color-rgb: 255, 255, 255;
+  --background-color-true: #f4f4f5;
+  // --background-color: #fff;
+  --background-color: var(--background-color-true);
+  --border-color: #dfe1e5;
+  --scrollbar-color: rgba(0, 0, 0, .2);
+  --section-box-shadow-color: rgba(0, 0, 0, .06);
+  --menu-box-shadow-color: rgba(0, 0, 0, .15);
+
+  --input-search-background-color: #fff;
+  --input-search-border-color: #dfe1e5;
+
+  --secondary-color: #c4c9cc;
+  --warning-color: #fed85a;
+  --green-color: #3ba748;
+  --green-color-rgb: 59, 167, 72;
+
+  // --avatar-online-color: #0ac630;
+  --avatar-online-color: var(--primary-color);
+  // --avatar-color-top: var(--peer-avatar-saved-top);
+  // --avatar-color-bottom: var(--peer-avatar-saved-bottom);
+  --chatlist-status-color: var(--avatar-online-color);
+  --chatlist-pinned-color: #a2abb2;
+  --badge-text-color: #fff;
+  --link-color: #00488f;
+  --ripple-color: rgba(0, 0, 0, #{$hover-alpha});
+  --skeleton-color: rgba(0, 0, 0, .12);
+  --poll-circle-color: var(--border-color);
+  --spoiler-background-color: #e3e5e8;
+  --spoiler-draft-background-color: #d9d9d9;
+  --monospace-text-color: var(--danger-color);
+  --backdrop-opacity: .85;
+  --menu-background-color: rgba(var(--surface-color-rgb), var(--backdrop-opacity));
+  --rlottie-vector-fill: rgba(0, 0, 0, #{$hover-alpha});
+  --limit-line-empty-background: #F1F3F5;
+  --old-input-background-color: #F1F3F5;
+  --premium-color: #9275ff;
+
+  --gc-background-color: #212121;
+  --gc-button-leave-color: rgba(255, 89, 90, .3);
+  --gc-button-unmuted-color: rgba(1, 200, 80, .2);
+  --gc-button-muted-color: rgba(60, 135, 247, .2);
+  --gc-button-hand-color: rgba(223, 68, 184, .2);
+  --gc-button-unmuted-fill-color: #195530;
+  --gc-button-muted-fill-color: #3C87F7;
+  --gc-green-color: #195530;
+  --gc-blue-color: #3C87F7;
+  --gc-red-color: #643333;
+
+  --gc-primary-text-color: #fff;
+  --gc-secondary-text-color: #aaaaaa;
+  --gc-green-text-color: #5CC85E;
+  --gc-blue-text-color: #3390ec;
+  --gc-red-text-color: #ff595a;
+
+  --gc-right-column-width: 26.25rem;
+
+  // * Day theme end
+}
+
+.night {
+//:root {
+  // * Night theme
+  --body-background-color: #181818;
+  --body-background-color-rgb: 24, 24, 24;
+  --background-color-true: #181818;
+  // --background-color: #212121;
+  --background-color: var(--background-color-true);
+  --border-color: #0f0f0f;
+  --scrollbar-color: rgba(255, 255, 255, .2);
+  --section-box-shadow-color: rgba(0, 0, 0, .12);
+
+  --input-search-background-color: #181818;
+  --input-search-border-color: #2f2f2f;
+
+  --secondary-color: #707579;
+
+  // --avatar-online-color: #0ac630;
+  --avatar-online-color: var(--primary-color);
+  // --avatar-color-top: var(--peer-avatar-violet-top);
+  // --avatar-color-bottom: var(--peer-avatar-violet-bottom);
+  --chatlist-status-color: var(--primary-color);
+  --chatlist-pinned-color: var(--secondary-color);
+  --badge-text-color: #fff;
+  --link-color: var(--primary-color);
+  --ripple-color: rgba(255, 255, 255, #{$hover-alpha});
+  --skeleton-color: rgba(255, 255, 255, .12);
+  --poll-circle-color: #fff;
+  --spoiler-background-color: #373e4e;
+  --spoiler-draft-background-color: #484848;
+  --monospace-text-color: var(--primary-text-color);
+  --menu-background-color: rgba(var(--surface-color-rgb), .75);
+  --rlottie-vector-fill: var(--light-secondary-text-color);
+  --limit-line-empty-background: var(--light-filled-secondary-text-color);
+  --old-input-background-color: var(--background-color-true);
+
+  // * Night theme end
+}
+
+.chat {
+  --message-highlighting-color: hsla(85.5319, 36.9171%, 40.402%, .4);//rgba(77, 142, 80, .4);
+  --message-highlighting-hover-color: rgba(var(--message-highlighting-color-rgb), calc(var(--message-highlighting-alpha) + .24));
+
+  --message-time-color: var(--secondary-text-color);
+  --message-checkbox-color: #61c642;
+  --message-checkbox-border-color: #fff;
+  --message-primary-color: var(--primary-color);
+  --message-primary-color-rgb: var(--primary-color-rgb);
+  --light-filled-message-primary-color: var(--light-filled-primary-color);
+  --message-status-color: var(--secondary-text-color);
+  --message-secondary-color: var(--secondary-color);
+  --message-error-color: var(--danger-color);
+  --message-icon-text-color: #fff;
+  --message-empty-primary-color: #fff;
+  --message-empty-primary-color-rgb: 255,255,255;
+  --message-reaction-tag-dot-color: rgba(255, 255, 255, .4);
+
+  --message-out-link-color: var(--link-color);
+  --message-out-status-color: var(--message-out-primary-color);
+  --message-out-time-color: var(--message-out-status-color);
+  --message-out-icon-text-color: #fff;
+  --message-out-selection-background-color: var(--selection-background-color);
+  --message-out-reaction-tag-dot-color: var(--message-reaction-tag-dot-color);
+}
+
+.night .chat {
+  --message-time-color: var(--secondary-text-color);
+  --message-checkbox-color: var(--primary-color);
+  --message-checkbox-border-color: #fff;
+  --message-status-color: var(--secondary-color);
+  --message-secondary-color: var(--secondary-color);
+  --message-error-color: #fff;
+  --message-icon-text-color: #fff;
+
+  --message-out-link-color: #fff;
+  --message-out-status-color: #fff;
+  --message-out-time-color: rgba(255, 255, 255, .6);
+  --message-out-icon-text-color: var(--message-out-background-color);
+  --message-out-selection-background-color: rgba(var(--surface-color-rgb), .4);
+  // --message-out-reaction-tag-dot-color: rgba(var(--message-out-background-color-rgb), 1);
+  --message-out-reaction-tag-dot-color: var(--message-out-background-color);
+}
 
 html,
 body {
@@ -96,9 +406,9 @@ html.no-backdrop {
   --menu-backdrop-filter: none;
 }
 
-@supports(padding: unquote('max(0px)')) {
+@supports(padding: string.unquote('max(0px)')) {
   html {
-    padding: 0 unquote('min(16px, env(safe-area-inset-right))') 0 unquote('min(16px, env(safe-area-inset-left))');
+    padding: 0 string.unquote('min(16px, env(safe-area-inset-right))') 0 string.unquote('min(16px, env(safe-area-inset-left))');
   }
 }
 
@@ -445,7 +755,7 @@ input:-webkit-autofill:active {
   color: #fff;
   font-size: 1rem;
   border-radius: $border-radius-medium;
-  max-width: unquote('min(30rem, calc(100vw - 2rem))');
+  max-width: string.unquote('min(30rem, calc(100vw - 2rem))');
   opacity: 0;
   backdrop-filter: blur(25px);
   pointer-events: all;
@@ -862,19 +1172,6 @@ not screen and (                min-resolution: 2dppx) {
       color: #fff;
       font-size: 1.75rem;
       text-shadow: 0px 0 3px rgba(0, 0, 0, 0.45);
-    }
-
-    &-archived {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      font-size: 1.125rem;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 50%;
-      padding: 0.375rem;
     }
   }
 }
@@ -2199,77 +2496,3 @@ hr {
   text-decoration: underline;
   cursor: pointer;
 }
-=======
-@use "partials/spoiler";
-@use "partials/emojiAnimation";
-@use "partials/reactions";
-@use "partials/reaction";
-@use "partials/stackedAvatars";
-@use "partials/stickerViewer";
-@use "partials/customEmoji";
-@use "partials/usernames";
-@use "partials/topics";
-@use "partials/themes";
-@use "partials/print";
-@use "partials/movableElement";
-@use "partials/shimmer";
-@use "partials/inviteLink";
-@use "partials/markup";
-@use "partials/quote";
-@use "partials/similarChannels";
-@use "partials/tooltip";
-@use "partials/topbarSearch";
-@use "partials/foldersSidebar";
-@use "partials/limitLine";
-@use "partials/animatedSuper";
-@use "partials/sparkles";
-@use "partials/starsBadge";
-@use "partials/starGift";
-
-@use "partials/popups/popup";
-@use "partials/popups/editAvatar";
-@use "partials/popups/mediaAttacher";
-@use "partials/popups/peer";
-@use "partials/popups/stickers";
-@use "partials/popups/datePicker";
-@use "partials/popups/createPoll";
-@use "partials/popups/forward";
-@use "partials/popups/instanceDeactivated";
-@use "partials/popups/joinChatInvite";
-@use "partials/popups/call";
-@use "partials/popups/groupCall";
-@use "partials/popups/sponsored";
-@use "partials/popups/mute";
-@use "partials/popups/reactedList";
-@use "partials/popups/payment";
-@use "partials/popups/paymentCard";
-@use "partials/popups/paymentShippingMethods";
-@use "partials/popups/paymentVerification";
-@use "partials/popups/paymentCardConfirmation";
-@use "partials/popups/paymentMethods";
-@use "partials/popups/limit";
-@use "partials/popups/giftPremium";
-@use "partials/popups/webApp";
-@use "partials/popups/chatlistInvite";
-@use "partials/popups/boostsViaGifts";
-@use "partials/popups/premium";
-@use "partials/popups/boost";
-@use "partials/popups/giftLink";
-@use "partials/popups/toggleReadDate";
-@use "partials/popups/confirmation";
-@use "partials/popups/translate";
-@use "partials/popups/reportAd";
-@use "partials/popups/aboutAd";
-@use "partials/popups/deleteMegagroupMessages";
-@use "partials/popups/stars";
-@use "partials/popups/makePaid";
-@use "partials/popups/accountsLimit";
-@use "partials/popups/starGiftInfo";
-@use "partials/popups/starGiftUpgrade";
-
-@use "partials/pages/pages";
-@use "partials/pages/authCode";
-@use "partials/pages/chats";
-@use "partials/pages/password";
-
-@use "partials/passcodeLockScreen";
